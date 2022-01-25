@@ -27,6 +27,18 @@ class AdvertisementSerializer(serializers.ModelSerializer):
                   'status', 'created_at', )
         read_only_fields = ['creator']
 
+    def update(self, instance, validated_data):
+
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.status = validated_data.get('status', instance.status)
+
+        count_ads = Advertisement.objects.filter(creator_id=self.context["request"].user, status='OPEN').count()
+        if count_ads == 10 and instance.status == 'OPEN':
+            raise ValidationError(['Count adv status=OPEN 10'])
+        instance.save()
+        return instance
+
     def create(self, validated_data):
         """Метод для создания"""
 
@@ -46,10 +58,5 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
         # TODO: добавьте требуемую валидацию
-        if 'title' not in data:
-            raise ValidationError(['Title field is required.'])
-
-        if 'description' not in data:
-            raise ValidationError(['Description field is required.'])
 
         return data
