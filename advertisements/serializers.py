@@ -33,18 +33,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get('description', instance.description)
         instance.status = validated_data.get('status', instance.status)
 
-        count_ads = Advertisement.objects.filter(creator_id=self.context["request"].user, status='OPEN').count()
-        if count_ads == 10 and instance.status == 'OPEN':
-            raise ValidationError(['Count adv status=OPEN 10'])
         instance.save()
         return instance
 
     def create(self, validated_data):
         """Метод для создания"""
 
-        count_ads = Advertisement.objects.filter(creator_id=self.context["request"].user, status='OPEN').count()
-        if count_ads == 10:
-            raise ValidationError(['Count adv status=OPEN 10'])
         # Простановка значения поля создатель по-умолчанию.
         # Текущий пользователь является создателем объявления
         # изменить или переопределить его через API нельзя.
@@ -57,6 +51,13 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
-        # TODO: добавьте требуемую валидацию
+        print(data.get('status', None))
+
+        if data.get('status', None) == 'OPEN':
+            if Advertisement.objects.filter(status='OPEN', creator=self.context["request"].user).count() >= 10:
+                raise ValidationError('Count adv status=OPEN 10')
+        elif not data.get('status', None):
+            if Advertisement.objects.filter(status='OPEN', creator=self.context["request"].user).count() >= 10:
+                raise ValidationError('Count adv status=OPEN 10')
 
         return data
