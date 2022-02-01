@@ -53,11 +53,19 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
         print(data.get('status', None))
 
-        if data.get('status', None) == 'OPEN':
+        if data.get('status') == 'OPEN' and self.context['request'].method == 'POST':
             if Advertisement.objects.filter(status='OPEN', creator=self.context["request"].user).count() >= 10:
                 raise ValidationError('Count adv status=OPEN 10')
-        elif not data.get('status', None):
+
+        if data.get('status') == 'OPEN' and self.context['request'].method == 'PATCH':
             if Advertisement.objects.filter(status='OPEN', creator=self.context["request"].user).count() >= 10:
                 raise ValidationError('Count adv status=OPEN 10')
+
+        # if data.get('status', None) == 'OPEN':
+        #     if Advertisement.objects.filter(status='OPEN', creator=self.context["request"].user).count() >= 10:
+        #         raise ValidationError('Count adv status=OPEN 10')
+        # elif not data.get('status', None):
+        #     if Advertisement.objects.filter(status='OPEN', creator=self.context["request"].user).count() >= 10:
+        #         raise ValidationError('Count adv status=OPEN 10')
 
         return data

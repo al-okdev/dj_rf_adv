@@ -15,13 +15,14 @@ Authorization: Token 3e346b46f4372019d78466979a49b54b9c88ae84
 
 {
   "title": "Тумба5",
-  "description": "Для ванной комнаты"
+  "description": "Для ванной комнаты",
+  "status": "OPEN"
 }
 
 ###
 
 # попытка поменять объявление +
-PATCH http://127.0.0.1:8000/api/advertisements/52/
+PATCH http://127.0.0.1:8000/api/advertisements/62/
 Content-Type: application/json
 Authorization: Token 3e346b46f4372019d78466979a49b54b9c88ae84
 
